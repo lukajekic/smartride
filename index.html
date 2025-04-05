@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        #scanner-container {
+            width: 300px;
+            height: 300px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #333;
+        }
+        #qr-video {
+            width: 100%;
+            height: 100%;
+        }
+        #beep-audio {
+            display: none; /* Hide the audio element */
+        }
+    </style>
+</head>
+<body>
+    <h1>Scan the QR Code</h1>
+    <div id="scanner-container">
+        <video id="qr-video"></video>
+    </div>
+    <audio id="beep-audio" src="beep.mp3"></audio>
+
+    <script src="https://cdn.jsdelivr.net/npm/qr-scanner@latest/qr-scanner.min.js"></script>
+    <script>
+        const videoElem = document.getElementById('qr-video');
+        const beepAudio = document.getElementById('beep-audio');
+        const redirectBaseURL = 'https://group247.wixstudio.com/validate-qr?value=';
+        let qrScanner;
+
+        async function startScanner() {
+            try {
+                qrScanner = new QrScanner(
+                    videoElem,
+                    result => {
+                        console.log('Scanned QR code:', result.data);
+                        beepAndRedirect(result.data);
+                        qrScanner.stop(); // Stop scanning after successful scan
+                    },
+                    {
+                        highlightScanRegion: true,
+                        highlightCodeOutline: true,
+                    }
+                );
+                await qrScanner.start();
+            } catch (error) {
+                console.error('Error starting scanner:', error);
+                alert('Could not access camera. Please ensure you have granted permission.');
+            }
+        }
+
+        function beepAndRedirect(qrValue) {
+            if (beepAudio) {
+                beepAudio.play();
+                setTimeout(() => {
+                    window.location.href = redirectBaseURL + encodeURIComponent(qrValue);
+                }, 3000); // Redirect after 3 seconds
+            } else {
+                window.location.href = redirectBaseURL + encodeURIComponent(qrValue); // Redirect immediately if no beep
+            }
+        }
+
+        window.onload = startScanner;
+    </script>
+</body>
+</html>
