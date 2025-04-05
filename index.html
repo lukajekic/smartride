@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/qr-scanner@latest/qr-scanner.min.js"></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>QR Code Scanner</title>
+    <script src="https://cdn.jsdelivr.net/npm/qr-scanner@latest/qr-scanner.min.js"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -27,19 +27,13 @@
             width: 100%;
             height: 100%;
         }
-        #beep-audio {
-            display: none; /* Hide the audio element */
-        }
     </style>
 </head>
 <body>
     <h1>Scan the QR Code</h1>
     <div id="scanner-container">
-        <video id="qr-video"></video>
+        <video id="qr-video" playsinline></video>
     </div>
-    <audio id="beep-audio" src="beep.mp3"></audio>
-
-    <script src="https://cdn.jsdelivr.net/npm/qr-scanner@latest/qr-scanner.min.js"></script>
     <script>
         const videoElem = document.getElementById('qr-video');
         const redirectBaseURL = 'https://group247.wixstudio.com/validate-qr?value=';
@@ -51,8 +45,8 @@
                     videoElem,
                     result => {
                         console.log('Scanned QR code:', result.data);
-                        beepAndRedirect(result.data);
-                        qrScanner.stop(); // Stop scanning after successful scan
+                        window.location.href = redirectBaseURL + encodeURIComponent(result.data);
+                        qrScanner.stop();
                     },
                     {
                         highlightScanRegion: true,
@@ -62,13 +56,8 @@
                 await qrScanner.start();
             } catch (error) {
                 console.error('Error starting scanner:', error);
-                alert('Could not access camera. Please ensure you have granted permission.');
+                alert('Could not access camera. Please ensure you have granted permission and are using HTTPS.');
             }
-        }
-
-        function beepAndRedirect(qrValue) {
-                    window.location.href = redirectBaseURL + encodeURIComponent(qrValue);
-            
         }
 
         window.onload = startScanner;
